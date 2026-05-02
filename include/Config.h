@@ -22,5 +22,5 @@
 #define BAT_MULTIPLIER 2.165f
 
 // --- Power Management ---
-#define TIME_TO_SLEEP_SEC 30        // Czas snu w sekundach
-#define uS_TO_S_FACTOR 1000000ULL   // Mnożnik: mikrosekundy na sekundy
+#define TIME_TO_SLEEP_SEC 5
+#define uS_TO_S_FACTOR 1000000ULL
