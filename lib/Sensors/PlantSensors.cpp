@@ -5,6 +5,7 @@ bool PlantSensors::init() {
 
     pinMode(PIN_SOIL_ADC, INPUT);
     pinMode(PIN_LIGHT_ADC, INPUT);
+    pinMode(PIN_BAT_ADC, INPUT);
 
     if (bme.begin()) {
         Serial.println("BME280: OK");
@@ -14,6 +15,24 @@ bool PlantSensors::init() {
 
     Serial.println("Czujniki zainicjowane poprawnie");
     return true;
+}
+
+float PlantSensors::readBatteryVoltage() {
+    uint32_t vMilliVolts = 0;
+    for(int i = 0; i < 16; i++) {
+        vMilliVolts += analogReadMilliVolts(PIN_BAT_ADC);
+    }
+    
+    return (vMilliVolts / 16.0f / 1000.0f) * BAT_MULTIPLIER;
+}
+
+int PlantSensors::calculateBatteryPercentage(float voltage) {
+    if (voltage >= 4.15) return 100;
+    if (voltage >= 4.0)  return 85;
+    if (voltage >= 3.8)  return 50;
+    if (voltage >= 3.7)  return 20;
+    if (voltage >= 3.6)  return 5;
+    return 0;
 }
 
 int PlantSensors::mapSoilMoisturePercentage(int rawValue) {
@@ -50,6 +69,7 @@ PlantData PlantSensors::readAll() {
 
     data.soilMoisture = mapSoilMoisturePercentage(analogRead(PIN_SOIL_ADC));
     data.lightLevel = mapLightLux(analogRead(PIN_LIGHT_ADC));
+    data.batteryPercentage = calculateBatteryPercentage(readBatteryVoltage());
 
     return data;
 }

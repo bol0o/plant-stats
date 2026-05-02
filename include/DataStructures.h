@@ -5,4 +5,5 @@ struct PlantData {
     float humidity;
     int soilMoisture;
     float lightLevel;
+    int batteryPercentage;
 };

@@ -16,3 +16,11 @@
 #define LIGHT_RESISTOR_VALUE 10000 // 10k Ohm
 #define ADC_RESOLUTION 4095.0 // 12-bit
 #define SYSTEM_VOLTAGE 3.3
+
+// --- Battery ---
+#define PIN_BAT_ADC 0
+#define BAT_MULTIPLIER 2.165f
+
+// --- Power Management ---
+#define TIME_TO_SLEEP_SEC 30        // Czas snu w sekundach
+#define uS_TO_S_FACTOR 1000000ULL   // Mnożnik: mikrosekundy na sekundy

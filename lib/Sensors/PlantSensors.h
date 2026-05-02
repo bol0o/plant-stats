@@ -11,6 +11,8 @@ class PlantSensors {
         BME280_Driver bme;
         int mapSoilMoisturePercentage(int rawValue);
         float mapLightLux(int rawValue);
+        float readBatteryVoltage();
+        int calculateBatteryPercentage(float voltage);
     public:
         bool init();
         PlantData readAll();

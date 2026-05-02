@@ -28,6 +28,7 @@ void loop() {
 
     Serial.print("Gleba (wilg):  "); Serial.print(data.soilMoisture);   Serial.println(" %");
     Serial.print("Swiatlo:       "); Serial.print(data.lightLevel, 1);  Serial.println(" Lux");
+    Serial.print("Bateria:       "); Serial.print(data.batteryPercentage); Serial.println(" %");
 
     Serial.println("----------------------------------------");
 
