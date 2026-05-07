@@ -10,6 +10,5 @@ class DataLogger {
     public:
         bool init();
         void logData(PlantData data);
-        void printLogs();
         void clearLogs();
 };

@@ -6,22 +6,20 @@
 #include "DataLogger.h"
 #include "BLEManager.h"
 #include "DistanceSensor.h"
-#include "DisplayManager.h" // NOWE
+#include "DisplayManager.h"
 
-// --- Globalne obiekty ---
 PlantSensors sensors;
 DataLogger logger;
 BLEManager ble;
 DistanceSensor distSensor;
-DisplayManager screen; // NOWE
+DisplayManager screen;
 
 const unsigned long LOG_INTERVAL = 600000; 
 unsigned long lastLogTime = 0;
 
-// --- Zmienne dla Ekranu ---
 bool isScreenOn = false;
 unsigned long screenWakeupTime = 0;
-unsigned long lastScreenUpdate = 0; // Do odswiezania danych w trakcie swiecenia
+unsigned long lastScreenUpdate = 0;
 const unsigned long SCREEN_TIMEOUT_MS = 10000; 
 
 void setup() {
@@ -63,18 +61,16 @@ void setup() {
 void loop() {
     unsigned long currentMillis = millis();
 
-    // ZADANIE 0: Obsługa gestu i Ekranu
-    
-    // Sprawdzamy czujnik ToF
+    // Obsługa gestu i ekranu
+    // Wybudzanie przy wykryciu ręki
     if (distSensor.checkForWakeup()) {
         screenWakeupTime = currentMillis; 
         
         if (!isScreenOn) {
             isScreenOn = true;
-            Serial.println("WAKE UP! -> Ekran WLACZONY.");
-            screen.turnOn(); // Sprzetowe wlaczenie matrycy
+            Serial.println("Ekran włączony");
+            screen.turnOn();
             
-            // Wymus natychmiastowe narysowanie danych po wybudzeniu
             lastScreenUpdate = 0; 
         }
     }
@@ -82,17 +78,17 @@ void loop() {
     // Usypianie ekranu po czasie
     if (isScreenOn && (currentMillis - screenWakeupTime > SCREEN_TIMEOUT_MS)) {
         isScreenOn = false;
-        Serial.println("SLEEP -> Ekran WYlACZONY (Timeout).");
-        screen.turnOff(); // Sprzetowe zgaszenie OLED-a
+        Serial.println("Ekran wyłączony");
+        screen.turnOff();
     }
 
-    // Odświeżanie danych na ekranie (np. co 1 sekunde), ale TYLKO gdy swieci
+    // Odświeżanie danych na ekranie tylko gdy swieci
     if (isScreenOn && (currentMillis - lastScreenUpdate >= 1000)) {
         lastScreenUpdate = currentMillis;
         screen.showData(sensors.readAll(), ble.isConnected());
     }
 
-    // ZADANIE 1: Zapisywanie logow
+    // Zapisywanie logow
     if (currentMillis - lastLogTime >= LOG_INTERVAL) {
         lastLogTime = currentMillis;
         
@@ -109,7 +105,7 @@ void loop() {
         }
     }
 
-    // ZADANIE 2: Obsluga BLE
+    // Obsluga BLE
     if (ble.isConnected() && ble.needsHistory) {
         time_t current_time;
         time(&current_time);

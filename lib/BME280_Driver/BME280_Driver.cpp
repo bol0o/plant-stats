@@ -111,7 +111,7 @@ BME_Result BME280_Driver::getValues() {
 
     res.temperature = compensateTemp(adc_T);
     res.humidity = compensateHum(adc_H);
-    res.success = true; // Wszystko się udało
+    res.success = true;
 
     return res;
 }

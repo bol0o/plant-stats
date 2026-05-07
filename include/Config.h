@@ -32,3 +32,12 @@
 #define CHAR_HISTORY_UUID      "dada1234-4321-dada-4321-dada12345678"
 #define CHAR_ACK_UUID          "dead1234-4321-dead-4321-dead12345678"
 #define BLE_TIMEOUT_MS         120000
+
+// --- OLED DISLAY ---
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET -1
+#define SCREEN_ADDRESS 0x3C 
+
+// --- PROXIMITY SENSOR ---
+#define MIN_DISTANCE_MM 150

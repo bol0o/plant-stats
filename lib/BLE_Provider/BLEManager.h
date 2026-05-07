@@ -14,7 +14,6 @@ public:
     void init();
     void updateLive(PlantData data);
     void sendHistory();
-    void checkTimeout();
     void startAdv();
     void stopAdv();
     bool isConnected() { return deviceConnected; }

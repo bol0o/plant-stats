@@ -36,22 +36,6 @@ void DataLogger::logData(PlantData data) {
                   sizeof(PlantData), records);
 }
 
-void DataLogger::printLogs() {
-    File file = LittleFS.open(logFileName, FILE_READ);
-    if (!file) return;
-
-    Serial.println("\n--- LOGI BINARNE ---");
-    PlantData d;
-    int count = 1;
-
-    while (file.read((uint8_t*)&d, sizeof(PlantData))) {
-        Serial.printf("[%d] T: %.2f*C | W: %.2f%% | G: %d%% | L: %.1f | Bat: %d%%\n", 
-                      count, d.temperature, d.humidity, d.soilMoisture, d.lightLevel, d.batteryPercentage);
-        count++;
-    }
-    file.close();
-}
-
 void DataLogger::clearLogs() {
     if (LittleFS.remove(logFileName)) {
         Serial.println("Logger: Pamięć wyczyszczona (plik logow usuniety).");
