@@ -1,8 +1,6 @@
 #include "PlantSensors.h"
 
 bool PlantSensors::init() {
-    Wire.begin(PIN_SDA, PIN_SCL);
-
     pinMode(PIN_SOIL_ADC, INPUT);
     pinMode(PIN_LIGHT_ADC, INPUT);
     pinMode(PIN_BAT_ADC, INPUT);

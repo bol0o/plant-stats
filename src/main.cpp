@@ -1,86 +1,122 @@
 #include <Arduino.h>
 #include <time.h>
-#include "esp_pm.h" // Biblioteka do zarządzania energią ESP32
+#include "esp_pm.h"
 
 #include "PlantSensors.h"
 #include "DataLogger.h"
 #include "BLEManager.h"
+#include "DistanceSensor.h"
+#include "DisplayManager.h" // NOWE
 
 // --- Globalne obiekty ---
 PlantSensors sensors;
 DataLogger logger;
 BLEManager ble;
+DistanceSensor distSensor;
+DisplayManager screen; // NOWE
 
-// --- Ustawienia czasu ---
-// Do testów ustawione na 30 sekund (30000 ms). 
-// Docelowo zmień na 30 minut (1800000 ms).
 const unsigned long LOG_INTERVAL = 600000; 
 unsigned long lastLogTime = 0;
 
+// --- Zmienne dla Ekranu ---
+bool isScreenOn = false;
+unsigned long screenWakeupTime = 0;
+unsigned long lastScreenUpdate = 0; // Do odswiezania danych w trakcie swiecenia
+const unsigned long SCREEN_TIMEOUT_MS = 10000; 
+
 void setup() {
     Serial.begin(115200);
-    delay(2000); // Krótka przerwa na ustabilizowanie napięcia po restarcie
+    delay(2000); 
     Serial.println("\n--- Start Systemu ---");
 
-    // 1. Inicjalizacja modułów
-    sensors.init();
+    Wire.begin(PIN_SDA, PIN_SCL);
+    Wire.setClock(400000);
+    delay(100);
+
+    if(sensors.init()) {
+        Serial.println("Sensory: OK");
+    }
+    delay(50);
+
+    if(distSensor.init()) {
+        Serial.println("VL53L0X: OK");
+    }
+    delay(50);
+
+    if(screen.init()) {
+        Serial.println("OLED: OK");
+    }
+    
     logger.init();
     ble.init();
 
-    // 2. Konfiguracja Auto Light Sleep
-    // Procesor sam uśnie, gdy dojdzie do delay() i nie będzie nic do roboty
     esp_pm_config_t pm_config = {
-        .max_freq_mhz = 160,       // Max prędkość podczas pracy
-        .min_freq_mhz = 40,        // Taktowanie w tle (podtrzymanie BLE)
-        .light_sleep_enable = true // Zezwól na automatyczne usypianie rdzenia!
+        .max_freq_mhz = 160,
+        .min_freq_mhz = 40,
+        .light_sleep_enable = true 
     };
     esp_pm_configure(&pm_config);
 
-    Serial.println("System gotowy. Przechodzę w tryb Auto-Sleep.");
+    Serial.println("System gotowy.");
 }
 
 void loop() {
     unsigned long currentMillis = millis();
 
-    // =================================================================
-    // ZADANIE 1: Zapisywanie logów co określony czas (Zegar)
-    // =================================================================
-    if (currentMillis - lastLogTime >= LOG_INTERVAL) {
-        lastLogTime = currentMillis; // Resetuj stoper
+    // ZADANIE 0: Obsługa gestu i Ekranu
+    
+    // Sprawdzamy czujnik ToF
+    if (distSensor.checkForWakeup()) {
+        screenWakeupTime = currentMillis; 
         
-        Serial.println("EVENT: Wybudzenie z timera. Odczyt i logowanie...");
+        if (!isScreenOn) {
+            isScreenOn = true;
+            Serial.println("WAKE UP! -> Ekran WLACZONY.");
+            screen.turnOn(); // Sprzetowe wlaczenie matrycy
+            
+            // Wymus natychmiastowe narysowanie danych po wybudzeniu
+            lastScreenUpdate = 0; 
+        }
+    }
+
+    // Usypianie ekranu po czasie
+    if (isScreenOn && (currentMillis - screenWakeupTime > SCREEN_TIMEOUT_MS)) {
+        isScreenOn = false;
+        Serial.println("SLEEP -> Ekran WYlACZONY (Timeout).");
+        screen.turnOff(); // Sprzetowe zgaszenie OLED-a
+    }
+
+    // Odświeżanie danych na ekranie (np. co 1 sekunde), ale TYLKO gdy swieci
+    if (isScreenOn && (currentMillis - lastScreenUpdate >= 1000)) {
+        lastScreenUpdate = currentMillis;
+        screen.showData(sensors.readAll(), ble.isConnected());
+    }
+
+    // ZADANIE 1: Zapisywanie logow
+    if (currentMillis - lastLogTime >= LOG_INTERVAL) {
+        lastLogTime = currentMillis;
         
         PlantData data = sensors.readAll();
-
-        Serial.printf("Temp: %.1f C | Hum: %.1f %% | Gleba: %d %% | Światło: %.1f lux | Bat: %d %%\n", 
-              data.temperature, data.humidity, data.soilMoisture, data.lightLevel, data.batteryPercentage);
         
-        // Dodaj aktualny czas do danych
         time_t now_unix;
         time(&now_unix);
         data.timestamp = (uint32_t)now_unix;
         
-        logger.logData(data); // Zapis do pamięci Flash
+        // logger.logData(data); 
 
         if (ble.isConnected()) {
             ble.updateLive(data);
-            Serial.println("Wysłano dane LIVE przez BLE.");
         }
     }
 
-    // =================================================================
-    // ZADANIE 2: Obsługa Bluetooth (Zdarzenia z zewnątrz)
-    // =================================================================
-
+    // ZADANIE 2: Obsluga BLE
     if (ble.isConnected() && ble.needsHistory) {
         time_t current_time;
         time(&current_time);
-        
         if (current_time > 1704067200) {
             PlantData live = sensors.readAll();
             live.timestamp = (uint32_t)current_time;
             ble.updateLive(live);
-            
             ble.sendHistory();
             ble.needsHistory = false;
         }
@@ -89,15 +125,7 @@ void loop() {
     if (ble.shouldClearLogs) {
         logger.clearLogs();
         ble.shouldClearLogs = false;
-        Serial.println("System: Logi wyczyszczone.");
     }
 
-    // =================================================================
-    // ZADANIE 3: "Oddychanie" (Klucz do oszczędzania baterii)
-    // =================================================================
-    // Ta funkcja mówi procesorowi: "Odpocznij przez 10ms".
-    // Ponieważ włączyliśmy 'light_sleep_enable', ESP32 w tym momencie
-    // dosłownie wyłącza rdzeń obliczeniowy na ułamek sekundy, drastycznie
-    // obniżając pobór prądu, ale zostawiając włączony Bluetooth.
-    delay(10); 
+    delay(20); 
 }
