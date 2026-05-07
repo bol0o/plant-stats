@@ -24,3 +24,11 @@
 // --- Power Management ---
 #define TIME_TO_SLEEP_SEC 5
 #define uS_TO_S_FACTOR 1000000ULL
+
+// --- BLE UUIDs ---
+#define SERVICE_UUID           "abcd1234-ef56-ab12-cd34-567890abcdef"
+#define CHAR_LIVE_DATA_UUID    "beef1234-4321-beef-4321-beef12345678"
+#define CHAR_TIME_SYNC_UUID    "cafe1234-4321-cafe-4321-cafe12345678"
+#define CHAR_HISTORY_UUID      "dada1234-4321-dada-4321-dada12345678"
+#define CHAR_ACK_UUID          "dead1234-4321-dead-4321-dead12345678"
+#define BLE_TIMEOUT_MS         120000
