@@ -37,6 +37,29 @@ void BLEManager::init() {
     startAdv();
 }
 
+void BLEManager::startAdv() {
+    NimBLEAdvertising* pAdvertising = NimBLEDevice::getAdvertising();
+    
+    pAdvertising->addServiceUUID(SERVICE_UUID);
+
+    pAdvertising->setMinInterval(1200); 
+    pAdvertising->setMaxInterval(1200);
+    
+    pAdvertising->start();
+    advertising = true;
+    lastActivityTime = millis();
+
+    Serial.println("BLE: Nadawanie co 1s...");
+}
+
+void BLEManager::stopAdv() {
+    if (advertising) {
+        NimBLEDevice::getAdvertising()->stop();
+        advertising = false;
+        Serial.println("BLE: Bluetooth wyłączony (Oszczędzanie energii).");
+    }
+}
+
 void BLEManager::sendHistory() {
     if (!deviceConnected) return;
 
@@ -62,29 +85,6 @@ void BLEManager::sendHistory() {
 
     file.close();
     Serial.println("BLE: Cała historia została wysłana.");
-}
-
-void BLEManager::startAdv() {
-    NimBLEAdvertising* pAdvertising = NimBLEDevice::getAdvertising();
-    
-    pAdvertising->addServiceUUID(SERVICE_UUID);
-
-    pAdvertising->setMinInterval(1200); 
-    pAdvertising->setMaxInterval(1200);
-    
-    pAdvertising->start();
-    advertising = true;
-    lastActivityTime = millis();
-
-    Serial.println("BLE: Nadawanie co 1s...");
-}
-
-void BLEManager::stopAdv() {
-    if (advertising) {
-        NimBLEDevice::getAdvertising()->stop();
-        advertising = false;
-        Serial.println("BLE: Bluetooth wyłączony (Oszczędzanie energii).");
-    }
 }
 
 void BLEManager::updateLive(PlantData data) {
