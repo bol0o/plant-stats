@@ -108,7 +108,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Download history</string>
+         <string>Download logs</string>
         </property>
        </widget>
       </item>

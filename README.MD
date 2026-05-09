@@ -8,7 +8,7 @@ Built with C++, the project consists of an ESP32-C6 based hardware node and a Qt
 The system features Bluetooth Low Energy communication, local data logging, and a gesture-activated OLED display.
 
 ## Key Features
-- **Real-Time Monitoring**: Tracks Soil Moisture, Ambient Temperature, Air Humidity, Light Intensity (LDR), and Battery Level.
+- **Real-Time Monitoring**: Tracks Soil Moisture, Ambient Temperature, Air Humidity, Light Intensity, and Battery Level.
 - **Gesture-Activated UI**: Uses a VL53L0X Time-of-Flight sensor to detect hand waves, waking up the OLED display for 10 seconds to conserve battery.
 - **Local Data Logging**: Stores historical data offline in flash memory using LittleFS when the client is disconnected.
 - **Qt6 Desktop Client**: PC dashboard featuring charts and historical data synchronization.
@@ -58,7 +58,7 @@ The device operates as a **BLE Peripheral**.
     2. Ensure you have the QtBluetooth and QtCharts modules installed.
     3. Build and run the project (Desktop target).
     4. Click "Connect", wait for the BLE discovery to find XIAO-C6-Kwiatek
-    5. Click "" to download historical data and read current values.
+    5. Click "Download logs" to download historical data and read current values.
 
 ## Images
 
