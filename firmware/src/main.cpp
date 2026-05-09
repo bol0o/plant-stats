@@ -61,8 +61,6 @@ void setup() {
 void loop() {
     unsigned long currentMillis = millis();
 
-    // Obsługa gestu i ekranu
-    // Wybudzanie przy wykryciu ręki
     if (distSensor.checkForWakeup()) {
         screenWakeupTime = currentMillis; 
         
@@ -75,20 +73,17 @@ void loop() {
         }
     }
 
-    // Usypianie ekranu po czasie
     if (isScreenOn && (currentMillis - screenWakeupTime > SCREEN_TIMEOUT_MS)) {
         isScreenOn = false;
         Serial.println("Ekran wyłączony");
         screen.turnOff();
     }
 
-    // Odświeżanie danych na ekranie tylko gdy swieci
     if (isScreenOn && (currentMillis - lastScreenUpdate >= 1000)) {
         lastScreenUpdate = currentMillis;
         screen.showData(sensors.readAll(), ble.isConnected());
     }
 
-    // Zapisywanie logow
     if (currentMillis - lastLogTime >= LOG_INTERVAL) {
         lastLogTime = currentMillis;
         
@@ -105,7 +100,6 @@ void loop() {
         }
     }
 
-    // Obsluga BLE
     if (ble.isConnected() && ble.needsHistory) {
         time_t current_time;
         time(&current_time);

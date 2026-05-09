@@ -46,16 +46,16 @@ void DisplayManager::showData(PlantData data, bool isBleConnected) {
     display.drawLine(0, 10, 128, 10, SH110X_WHITE);
 
     display.setCursor(0, 16);
-    display.printf("Temp:    %.1f C", data.temperature);
+    display.printf("Temp.:       %.1f C", data.temperature);
     
     display.setCursor(0, 28);
-    display.printf("Wilg P:  %.1f %%", data.humidity);
+    display.printf("Air hum.:    %.1f %%", data.humidity);
     
     display.setCursor(0, 40);
-    display.printf("Gleba:   %d %%", data.soilMoisture);
+    display.printf("Ground hum.: %d %%", data.soilMoisture);
     
     display.setCursor(0, 52);
-    display.printf("Swiatlo: %.0f lx", data.lightLevel);
+    display.printf("Light:       %.0f lx", data.lightLevel);
 
     display.display();
 }

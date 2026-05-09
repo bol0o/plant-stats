@@ -39,7 +39,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Połącz / Skanuj</string>
+         <string>Connect / Scan</string>
         </property>
        </widget>
       </item>
@@ -51,48 +51,48 @@
          </font>
         </property>
         <property name="text">
-         <string>Status: Rozłączono</string>
+         <string>Status: Not connected</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QGroupBox" name="groupLive">
         <property name="title">
-         <string>Odczyty Na Żywo</string>
+         <string>Live Data</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayoutLive">
          <item>
           <widget class="QLabel" name="lblLiveTemp">
            <property name="text">
-            <string>Temperatura: -- °C</string>
+            <string>Temperature: -- °C</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLabel" name="lblLiveHum">
            <property name="text">
-            <string>Wilgotność P.: -- %</string>
+            <string>Air hum.: -- %</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLabel" name="lblLiveSoil">
            <property name="text">
-            <string>Wilgotność G.: -- %</string>
+            <string>Ground hum.: -- %</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLabel" name="lblLiveLight">
            <property name="text">
-            <string>Światło: -- lx</string>
+            <string>Light: -- lx</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLabel" name="lblLiveBattery">
            <property name="text">
-            <string>Bateria: -- %</string>
+            <string>Battery: -- %</string>
            </property>
           </widget>
          </item>
@@ -108,7 +108,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Pobierz Historię</string>
+         <string>Download history</string>
         </property>
        </widget>
       </item>
@@ -121,7 +121,7 @@
          </size>
         </property>
         <property name="text">
-         <string>Wyczyść logi w XIAO</string>
+         <string>Clear logs</string>
         </property>
        </widget>
       </item>
