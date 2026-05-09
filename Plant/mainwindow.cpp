@@ -41,10 +41,10 @@ MainWindow::MainWindow(QWidget *parent)
         layout->addWidget(view);
     };
 
-    setupChart(m_soilChart, m_soilSeries, m_axisTimeSoil, m_soilChartView, "Wilgotność Gleby (%)", 0, 100, Qt::cyan, ui->chartLayoutSoil);
-    setupChart(m_tempChart, m_tempSeries, m_axisTimeTemp, m_tempChartView, "Temperatura (°C)", 15, 35, Qt::red, ui->chartLayoutTemp);
-    setupChart(m_humChart, m_humSeries, m_axisTimeHum, m_humChartView, "Wilgotność Powietrza (%)", 0, 100, Qt::green, ui->chartLayoutHum);
-    setupChart(m_lightChart, m_lightSeries, m_axisTimeLight, m_lightChartView, "Światło (lx)", 0, 4095, Qt::yellow, ui->chartLayoutLight);
+    setupChart(m_soilChart, m_soilSeries, m_axisTimeSoil, m_soilChartView, "Ground humidity (%)", 0, 100, Qt::cyan, ui->chartLayoutSoil);
+    setupChart(m_tempChart, m_tempSeries, m_axisTimeTemp, m_tempChartView, "Temperature (°C)", 15, 35, Qt::red, ui->chartLayoutTemp);
+    setupChart(m_humChart, m_humSeries, m_axisTimeHum, m_humChartView, "Air humidity (%)", 0, 100, Qt::green, ui->chartLayoutHum);
+    setupChart(m_lightChart, m_lightSeries, m_axisTimeLight, m_lightChartView, "Light (lx)", 0, 4095, Qt::yellow, ui->chartLayoutLight);
 
     connect(m_ble, &BleManager::statusUpdate, this, &MainWindow::onStatusUpdate);
     connect(m_ble, &BleManager::dataReceived, this, &MainWindow::onDataReceived);
@@ -172,7 +172,7 @@ MainWindow::~MainWindow() {
 void MainWindow::onDownloadHistoryClicked() {
     m_soilSeries->clear();
     m_tempSeries->clear();
-    ui->lblStatus->setText("Status: Żądanie historii wysłane...");
+    ui->lblStatus->setText("Status: History request sent...");
 
     m_ble->requestHistory();
 }
@@ -185,16 +185,16 @@ void MainWindow::onDataReceived(float temp, float hum, int soil, float light, in
 
     QString baseStyle = "font-size: 16px; margin: 5px;";
 
-    ui->lblLiveTemp->setText(QString("Temperatura: %1 °C 🌡️").arg(temp, 0, 'f', 1));
+    ui->lblLiveTemp->setText(QString("Temperature: %1 °C 🌡️").arg(temp, 0, 'f', 1));
     ui->lblLiveTemp->setStyleSheet(baseStyle);
 
-    ui->lblLiveHum->setText(QString("Wilgotność P.: %1 % 💧").arg(hum, 0, 'f', 1));
+    ui->lblLiveHum->setText(QString("Air hum.: %1 % 💧").arg(hum, 0, 'f', 1));
     ui->lblLiveHum->setStyleSheet(baseStyle);
 
-    ui->lblLiveLight->setText(QString("Światło: %1 lux ☀️").arg(light, 0, 'f', 1));
+    ui->lblLiveLight->setText(QString("Light: %1 lux ☀️").arg(light, 0, 'f', 1));
     ui->lblLiveLight->setStyleSheet(baseStyle);
 
-    QString soilText = QString("Wilgotność G.: %1 % ").arg(soil);
+    QString soilText = QString("Ground hum.: %1 % ").arg(soil);
     if (soil < 20) {
         soilText += "🥀";
         ui->lblLiveSoil->setStyleSheet(baseStyle + "color: #ff4444; font-weight: bold;");
@@ -207,7 +207,7 @@ void MainWindow::onDataReceived(float temp, float hum, int soil, float light, in
     }
     ui->lblLiveSoil->setText(soilText);
 
-    QString batText = QString("Bateria: %1 % ").arg(battery);
+    QString batText = QString("Battery: %1 % ").arg(battery);
     if (battery < 15) {
         batText += "🪫";
         ui->lblLiveBattery->setStyleSheet(baseStyle + "color: #ff4444; font-weight: bold;");
@@ -242,5 +242,5 @@ void MainWindow::onHistoryDataReceived(uint32_t timestamp, float temp, float hum
 
 void MainWindow::onClearLogsClicked() {
     m_ble->sendAck();
-    ui->lblStatus->setText("Status: Żądanie czyszczenia wysłane.");
+    ui->lblStatus->setText("Status: Clear history request sent...");
 }

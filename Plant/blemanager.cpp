@@ -21,7 +21,7 @@ void BleManager::syncTime() {
         QByteArray payload(reinterpret_cast<const char*>(&now), sizeof(now));
         m_service->writeCharacteristic(timeChar, payload, QLowEnergyService::WriteWithResponse);
 
-        qDebug() << "Wysłano czas do kwiatka:" << now;
+        qDebug() << "Time sent: " << now;
     }
 }
 
@@ -73,13 +73,13 @@ void BleManager::onCharacteristicChanged(const QLowEnergyCharacteristic &c, cons
 }
 
 void BleManager::startScan() {
-    emit statusUpdate("Szukam XIAO-C6...");
+    emit statusUpdate("Searching for XIAO-C6...");
     m_discoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
 }
 
 void BleManager::onDeviceDiscovered(const QBluetoothDeviceInfo &info) {
     if (info.name().contains("XIAO-C6-Kwiatek")) {
-        emit statusUpdate("Znaleziono kwiatek! Próbuję się połączyć...");
+        emit statusUpdate("Plant found! Trying to connect...");
         m_discoveryAgent->stop();
         connectToDevice(info);
     }
@@ -96,20 +96,20 @@ void BleManager::connectToDevice(const QBluetoothDeviceInfo &info) {
     connect(m_controller, &QLowEnergyController::connected, this, &BleManager::onControllerConnected);
     connect(m_controller, &QLowEnergyController::serviceDiscovered, this, &BleManager::onServiceDiscovered);
     connect(m_controller, &QLowEnergyController::discoveryFinished, [this](){
-        emit statusUpdate("Wszystkie serwisy wykryte.");
+        emit statusUpdate("All services discovered...");
     });
 
     m_controller->connectToDevice();
 }
 
 void BleManager::onControllerConnected() {
-    emit statusUpdate("Połączono. Szukam usług...");
+    emit statusUpdate("Connected. Searching for services...");
     m_controller->discoverServices();
 }
 
 void BleManager::onServiceDiscovered(const QBluetoothUuid &gatt) {
     if (gatt == SERVICE_UUID) {
-        emit statusUpdate("Znaleziono usługę Kwiatka!");
+        emit statusUpdate("Plant service found!");
 
         m_service = m_controller->createServiceObject(gatt, this);
 
@@ -131,6 +131,6 @@ void BleManager::onServiceStateChanged(QLowEnergyService::ServiceState newState)
 
         syncTime();
 
-        emit statusUpdate("Gotowy! Połączono i zsynchronizowano czas.");
+        emit statusUpdate("Done!");
     }
 }
